@@ -52,8 +52,8 @@ void Connection::listenServer() {
 			
 			packet >> data;
 			if (data.type == dataConst.message) {
-				//TODO: show it
 				std::cout << "Got message from server: " << data.message << std::endl;
+				messageBufferShow.push_back(data.name + ": " +  data.message);
 			}
 			else if (data.type == dataConst.line) {
 				std::cout << "Got line from server..." << std::endl;
@@ -77,9 +77,9 @@ void Connection::listenServer() {
 					}
 
 					line.append(sf::Vertex(sf::Vector2f(std::stof(coord[0]), std::stof(coord[1])), sf::Color::Black));
+					coord.clear();
 				}
-				//TODO: draw it 
-				//draw(line)
+				lineBufferShow.push_back(line);
 			}
 		}
 	}
@@ -92,21 +92,22 @@ std::thread Connection::listenServerInThread() {
 
 void Connection::sendMessage(std::string message) {
 	if(message != "")
-		messageBuffer.push_back(message);
+		messageBufferSend.push_back(message);
 }
 
 void Connection::sendLine(sf::VertexArray line) {
 	if(line.getVertexCount() > 0)
-		lineBuffer.push_back(line);
+		lineBufferSend.push_back(line);
 }
 
 void Connection::sendMessageToServer() {
 	sf::Packet packet;
 
-	if (messageBuffer.size() > 0) {
+	if (messageBufferSend.size() > 0) {
 		data.type = 1;
-		data.message = messageBuffer.back();
-		messageBuffer.pop_back();
+		data.message = messageBufferSend.back();
+		data.name = userName;
+		messageBufferSend.pop_back();
 		packet << data;
 
 		// TCP socket:
@@ -120,23 +121,25 @@ void Connection::sendMessageToServer() {
 		}
 	}
 
-	if (lineBuffer.size() > 0) {
+	if (lineBufferSend.size() > 0) {
 
 		std::string line = "";
-		sf::VertexArray va = lineBuffer.back();
+		sf::VertexArray va = lineBufferSend.back();
 
 		for (int unsigned i = 0; i < va.getVertexCount(); i++) {
 			std::ostringstream ss;
 			ss << va[i].position.x;
 			line += ss.str() + ":";
+			ss.str("");
 			ss.clear();
 			ss << va[i].position.y;
 			line += ss.str() + ";";
 		}
-		lineBuffer.pop_back();
+		lineBufferSend.pop_back();
 
 		data.type = 2;
 		data.message = line;
+		data.name = userName;
 		packet << data;
 
 		if (socket.send(packet) == sf::Socket::Done)
@@ -148,4 +151,26 @@ void Connection::sendMessageToServer() {
 			return;
 		}
 	}
+}
+
+
+std::string Connection::getMessage() {
+	std::string ret = "";
+	if (messageBufferShow.size() > 0) {
+		ret = messageBufferShow.back();
+		messageBufferShow.pop_back();
+	}
+	return ret;
+}
+sf::VertexArray Connection::getLine() {
+	sf::VertexArray ret;
+	if (lineBufferShow.size() > 0) {
+		ret = lineBufferShow.back();
+		lineBufferShow.pop_back();
+	}
+	return ret;
+}
+
+void Connection::userName(std::string n) {
+	this->userName = n;
 }

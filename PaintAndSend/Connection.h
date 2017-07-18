@@ -13,11 +13,12 @@ class Connection
 	sf::TcpSocket socket;
 	sf::TcpListener Listener;
 	sf::SocketSelector selector;
-	std::vector<std::string> messageBuffer;
-	std::vector<sf::VertexArray> lineBuffer;
-	std::thread mainThread;
+	std::vector<std::string> messageBufferSend;
+	std::vector<sf::VertexArray> lineBufferSend;
+	std::vector<std::string> messageBufferShow;
+	std::vector<sf::VertexArray> lineBufferShow;
+	std::string userName = "";
 	const unsigned short port = 50001;
-	const unsigned short portListen = 50002;
 
 	void sendMessageToServer();
 
@@ -29,5 +30,10 @@ public:
 	std::thread listenServerInThread();
 	void sendMessage(std::string message);
 	void sendLine(sf::VertexArray line);
+
+	std::string getMessage();
+	sf::VertexArray getLine();
+
+	void userName(std::string n);
 };
 

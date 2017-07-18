@@ -12,7 +12,9 @@ class Gui
 	Connection* connection = new Connection();
 	bool isDrawing = false;
 
-	sf::Text text;
+	sf::Text input;
+	sf::Text chat;
+	std::string chatString;
 	sf::Font font;
 	std::string s;
 

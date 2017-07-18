@@ -38,14 +38,19 @@ void Gui::start() {
 	drawArea.setOutlineColor(sf::Color::Black);
 	drawArea.setPosition(sf::Vector2f(2, 2));
 
-	text.setFont(font);
-	text.setFillColor(sf::Color::Black);
-	text.setCharacterSize(20);
-	text.setPosition(sf::Vector2f(650, 0));
+	input.setFont(font);
+	input.setFillColor(sf::Color::Black);
+	input.setCharacterSize(20);
+	input.setPosition(sf::Vector2f(650, 565));
 
-	sf::RectangleShape textBorder(sf::Vector2f(400, 1));
+	chat.setFont(font);
+	chat.setFillColor(sf::Color::Black);
+	chat.setCharacterSize(16);
+	chat.setPosition(sf::Vector2f(650, 0));
+
+	sf::RectangleShape textBorder(sf::Vector2f(400, 2));
 	textBorder.setFillColor(sf::Color::Black);
-	textBorder.setPosition(sf::Vector2f(650, 25));
+	textBorder.setPosition(sf::Vector2f(650, 590));
 
 	while (window.isOpen()) {
 
@@ -71,7 +76,7 @@ void Gui::start() {
 							s.push_back(c);
 						break;
 					}
-					text.setString(s);
+					input.setString(s);
 				}
 			}
 
@@ -105,9 +110,21 @@ void Gui::start() {
 				}
 			}
 		}
+		
+		std::string message = connection->getMessage();
+		if (message != "") {
+			chatString.append("\n");
+			chatString.append(message);
+			chat.setString(chatString);
+		}
+
+		sf::VertexArray line = connection->getLine();
+		if(line.getVertexCount() > 0)
+			lines.push_back(line);
 
 		window.clear(sf::Color::White);
-		window.draw(text);
+		window.draw(input);
+		window.draw(chat);
 		window.draw(textBorder);
 		window.draw(drawArea);
 		window.draw(actualLine);

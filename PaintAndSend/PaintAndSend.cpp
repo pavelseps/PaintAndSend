@@ -14,6 +14,8 @@ using namespace std;
 int main()
 {
 
+
+
 	char c;
 	std::cout << "Server (s) OR Client (c)?" << std::endl;
 	std::cin >> c;
@@ -27,6 +29,8 @@ int main()
 		Gui* g = new Gui();
 		g->start();
 	}
+
+	
 
 	system("PAUSE");
     return 0;
