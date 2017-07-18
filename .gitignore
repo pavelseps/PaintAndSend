@@ -1,0 +1,8 @@
+.vs/
+Debug/
+packages/
+Release/
+x64/
+PaintAndSend/Debug/
+PaintAndSend/Release/
+PaintAndSend/x64/
