@@ -23,13 +23,15 @@ std::thread Gui::startInThread() {
 
 
 void Gui::start() {
+	connection->setUserName("Franta Lála");
 	actualLine.clear();
 
 	sf::RenderWindow window(sf::VideoMode(1100, 600), "Paint and Send");
 
 	if (!font.loadFromFile("arial.ttf"))
 	{
-		// error...
+		std::cout << "Can't load font";
+		return;
 	}
 
 	sf::RectangleShape drawArea(sf::Vector2f(600, 596));
@@ -54,7 +56,7 @@ void Gui::start() {
 
 	while (window.isOpen()) {
 
-		//Event processing.
+		//Event processing
 		sf::Event event;
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
@@ -88,8 +90,9 @@ void Gui::start() {
 				}
 				if (event.mouseButton.button == sf::Mouse::Right)
 				{
-					if (lines.size() > 0)
-						lines.pop_back();
+
+					//TODO: fix deleteting lines (problem with pair and pop_last()....)
+					connection->deleteMyLine();
 				}
 			}
 
@@ -97,7 +100,6 @@ void Gui::start() {
 				if (event.mouseButton.button == sf::Mouse::Left)
 				{
 					isDrawing = false;
-					//lines.push_back(actualLine);
 					connection->sendLine(actualLine);
 					actualLine.clear();
 				}
@@ -111,6 +113,7 @@ void Gui::start() {
 			}
 		}
 		
+		//Check for new data
 		std::string message = connection->getMessage();
 		if (message != "") {
 			chatString.append("\n");
@@ -118,18 +121,27 @@ void Gui::start() {
 			chat.setString(chatString);
 		}
 
-		sf::VertexArray line = connection->getLine();
-		if(line.getVertexCount() > 0)
-			lines.push_back(line);
+		std::pair<std::string, sf::VertexArray> line = connection->getLine();
+		if(line.second.getVertexCount() > 0)
+			lines[line.first].push_back(line.second);
 
+		std::string deleteLine = connection->renderDeletedLine();
+		if (deleteLine != "")
+			lines[deleteLine].pop_back();
+
+
+		//Render all to screen
 		window.clear(sf::Color::White);
 		window.draw(input);
 		window.draw(chat);
 		window.draw(textBorder);
 		window.draw(drawArea);
 		window.draw(actualLine);
-		for (std::vector<int>::size_type i = 0; i != lines.size(); i++)
-			window.draw(lines[i]);
+		for (auto const userLine : lines) {
+			for (std::vector<int>::size_type i = 0; i != userLine.second.size(); i++) {
+				window.draw(userLine.second[i]);
+			}
+		}
 		window.display();
 	}
 }

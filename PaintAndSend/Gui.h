@@ -7,7 +7,7 @@
 #pragma once
 class Gui
 {
-	std::vector<sf::VertexArray> lines;
+	std::map<std::string, std::vector<sf::VertexArray>> lines;
 	sf::VertexArray actualLine = sf::VertexArray(sf::LineStrip);
 	Connection* connection = new Connection();
 	bool isDrawing = false;

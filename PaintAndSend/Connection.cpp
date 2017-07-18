@@ -4,12 +4,14 @@
 struct dataToSend {
 	sf::Int8 type;
 	std::string name;
+	std::string localPort;
 	std::string message;
 } data;
 
 struct dataConst {
-	sf::Int8 message = 1;
-	sf::Int8 line = 2;
+	sf::Int8 MESSAGE = 1;
+	sf::Int8 LINE = 2;
+	sf::Int8 DELETE_LINE = 3;
 } dataConst;
 
 sf::Packet& operator <<(sf::Packet& packet, const dataToSend& d)
@@ -51,14 +53,16 @@ void Connection::listenServer() {
 		{
 			
 			packet >> data;
-			if (data.type == dataConst.message) {
+			if (data.type == dataConst.MESSAGE) {
 				std::cout << "Got message from server: " << data.message << std::endl;
 				messageBufferShow.push_back(data.name + ": " +  data.message);
 			}
-			else if (data.type == dataConst.line) {
+			else if (data.type == dataConst.LINE) {
 				std::cout << "Got line from server..." << std::endl;
 
-				sf::VertexArray line = sf::VertexArray(sf::LineStrip);
+				std::pair<std::string, sf::VertexArray> line;
+				line.first = data.name + "_" + data.localPort;
+				line.second = sf::VertexArray(sf::LineStrip);
 				std::stringstream sscoords(data.message);
 				std::string segment;
 				std::vector<std::string> coords;
@@ -76,10 +80,13 @@ void Connection::listenServer() {
 						coord.push_back(segment);
 					}
 
-					line.append(sf::Vertex(sf::Vector2f(std::stof(coord[0]), std::stof(coord[1])), sf::Color::Black));
+					line.second.append(sf::Vertex(sf::Vector2f(std::stof(coord[0]), std::stof(coord[1])), sf::Color::Black));
 					coord.clear();
 				}
 				lineBufferShow.push_back(line);
+			}
+			else if (data.type == dataConst.DELETE_LINE) {
+				lineBufferToDelete.push_back(data.name+"_"+data.message);
 			}
 		}
 	}
@@ -104,9 +111,9 @@ void Connection::sendMessageToServer() {
 	sf::Packet packet;
 
 	if (messageBufferSend.size() > 0) {
-		data.type = 1;
+		data.type = dataConst.MESSAGE;
 		data.message = messageBufferSend.back();
-		data.name = userName;
+		data.name = this->userName;
 		messageBufferSend.pop_back();
 		packet << data;
 
@@ -137,9 +144,10 @@ void Connection::sendMessageToServer() {
 		}
 		lineBufferSend.pop_back();
 
-		data.type = 2;
+		data.type = dataConst.LINE;
 		data.message = line;
-		data.name = userName;
+		data.localPort = std::to_string(socket.getLocalPort());
+		data.name = this->userName;
 		packet << data;
 
 		if (socket.send(packet) == sf::Socket::Done)
@@ -162,8 +170,8 @@ std::string Connection::getMessage() {
 	}
 	return ret;
 }
-sf::VertexArray Connection::getLine() {
-	sf::VertexArray ret;
+std::pair<std::string, sf::VertexArray> Connection::getLine() {
+	std::pair<std::string, sf::VertexArray> ret;
 	if (lineBufferShow.size() > 0) {
 		ret = lineBufferShow.back();
 		lineBufferShow.pop_back();
@@ -171,6 +179,44 @@ sf::VertexArray Connection::getLine() {
 	return ret;
 }
 
-void Connection::userName(std::string n) {
+void Connection::setUserName(std::string n) {
 	this->userName = n;
+}
+
+std::string Connection::getUserName() {
+	return this->userName;
+}
+
+void Connection::setLocalPort(std::string n) {
+	this->localPort = n;
+}
+
+std::string Connection::getLocalPort() {
+	return this->localPort;
+}
+
+void Connection::deleteMyLine() {
+	sf::Packet packet;
+	data.type = dataConst.DELETE_LINE;
+	data.name = this->userName;
+	data.message = std::to_string(socket.getLocalPort());
+	packet << data;
+
+	if (socket.send(packet) == sf::Socket::Done)
+	{
+		std::cout << "Client: delete line send" << std::endl;
+	}
+	else {
+		std::cout << "Client: delete line failed" << std::endl;
+		return;
+	}
+}
+
+std::string Connection::renderDeletedLine() {
+	std::string ret = "";
+	if (lineBufferToDelete.size() > 0) {
+		ret = lineBufferToDelete.back();
+		lineBufferToDelete.pop_back();
+	}
+	return ret;
 }

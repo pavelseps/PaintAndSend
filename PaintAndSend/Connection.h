@@ -13,11 +13,16 @@ class Connection
 	sf::TcpSocket socket;
 	sf::TcpListener Listener;
 	sf::SocketSelector selector;
+
 	std::vector<std::string> messageBufferSend;
 	std::vector<sf::VertexArray> lineBufferSend;
+
 	std::vector<std::string> messageBufferShow;
-	std::vector<sf::VertexArray> lineBufferShow;
+	std::vector<std::pair<std::string, sf::VertexArray>> lineBufferShow;
+
+	std::vector<std::string> lineBufferToDelete;
 	std::string userName = "";
+	std::string localPort = "";
 	const unsigned short port = 50001;
 
 	void sendMessageToServer();
@@ -32,8 +37,15 @@ public:
 	void sendLine(sf::VertexArray line);
 
 	std::string getMessage();
-	sf::VertexArray getLine();
+	std::pair<std::string, sf::VertexArray> getLine();
 
-	void userName(std::string n);
+	void setUserName(std::string n);
+	std::string getUserName();
+
+	void setLocalPort(std::string n);
+	std::string getLocalPort();
+
+	void deleteMyLine();
+	std::string renderDeletedLine();
 };
 
