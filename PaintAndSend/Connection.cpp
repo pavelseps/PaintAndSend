@@ -6,7 +6,7 @@ struct dataToSend {
 	std::string name;
 	std::string localPort;
 	std::string message;
-} data;
+};
 
 struct dataConst {
 	sf::Int8 MESSAGE = 1;
@@ -16,11 +16,11 @@ struct dataConst {
 
 sf::Packet& operator <<(sf::Packet& packet, const dataToSend& d)
 {
-	return packet << d.type << d.name << d.message;
+	return packet << d.type << d.name << d.localPort << d.message;
 }
 sf::Packet& operator >>(sf::Packet& packet, dataToSend& d)
 {
-	return packet >> d.type >> d.name >> d.message;
+	return packet >> d.type >> d.name >> d.localPort >> d.message;
 }
 
 
@@ -51,6 +51,7 @@ void Connection::listenServer() {
 		sf::Packet packet;
 		if (socket.receive(packet) == sf::Socket::Done)
 		{
+			dataToSend data = dataToSend();
 			
 			packet >> data;
 			if (data.type == dataConst.MESSAGE) {
@@ -86,7 +87,7 @@ void Connection::listenServer() {
 				lineBufferShow.push_back(line);
 			}
 			else if (data.type == dataConst.DELETE_LINE) {
-				lineBufferToDelete.push_back(data.name+"_"+data.message);
+				lineBufferToDelete.push_back(data.name + "_" + data.localPort);
 			}
 		}
 	}
@@ -109,6 +110,7 @@ void Connection::sendLine(sf::VertexArray line) {
 
 void Connection::sendMessageToServer() {
 	sf::Packet packet;
+	dataToSend data = dataToSend();
 
 	if (messageBufferSend.size() > 0) {
 		data.type = dataConst.MESSAGE;
@@ -196,10 +198,12 @@ std::string Connection::getLocalPort() {
 }
 
 void Connection::deleteMyLine() {
+	dataToSend data = dataToSend();
+
 	sf::Packet packet;
 	data.type = dataConst.DELETE_LINE;
 	data.name = this->userName;
-	data.message = std::to_string(socket.getLocalPort());
+	data.localPort = std::to_string(socket.getLocalPort());
 	packet << data;
 
 	if (socket.send(packet) == sf::Socket::Done)

@@ -90,8 +90,6 @@ void Gui::start() {
 				}
 				if (event.mouseButton.button == sf::Mouse::Right)
 				{
-
-					//TODO: fix deleteting lines (problem with pair and pop_last()....)
 					connection->deleteMyLine();
 				}
 			}
@@ -126,7 +124,7 @@ void Gui::start() {
 			lines[line.first].push_back(line.second);
 
 		std::string deleteLine = connection->renderDeletedLine();
-		if (deleteLine != "")
+		if (deleteLine != "" && lines[deleteLine].size() > 0)
 			lines[deleteLine].pop_back();
 
 
