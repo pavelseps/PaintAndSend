@@ -16,7 +16,7 @@ int main()
 
 
 
-	char c;
+	/*char c;
 	std::cout << "Server (s) OR Client (c)?" << std::endl;
 	std::cin >> c;
 	if (c == 's') {
@@ -27,8 +27,11 @@ int main()
 	else {
 		//Star GUI
 		Gui* g = new Gui();
-		g->start();
-	}
+		g->menu();
+	}*/
+
+	Gui* g = new Gui();
+	g->menu();
 
 	
 

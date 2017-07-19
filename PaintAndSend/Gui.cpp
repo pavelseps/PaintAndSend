@@ -4,12 +4,17 @@
 
 Gui::Gui()
 {
-
+	if (!font.loadFromFile("arial.ttf"))
+	{
+		std::cout << "Can't load font";
+		return;
+	}
+	/*
 	std::thread t1 = connection->listenServerInThread();
 	std::thread t2 = this->startInThread();
 
 	t1.join();
-	t2.join();
+	t2.join();*/
 }
 
 
@@ -21,18 +26,110 @@ std::thread Gui::startInThread() {
 	return std::thread([this] { this->start(); });
 }
 
+void Gui::menu() {
+	s.erase();
+
+	TextInput* focused = nullptr;
+
+	FocusCheck<TextInput>* focusTextInput = new FocusCheck<TextInput>();
+	FocusCheck<TextLabel>* focusTextLabel = new FocusCheck<TextLabel>();
+
+	TextInput* name = new TextInput(sf::Vector2f(10, 10), sf::Vector2f(340, 20), font);
+	name->setLabel("Name");
+	focusTextInput->setTextInput(name);
+
+	TextInput* ip = new TextInput(sf::Vector2f(10, 100), sf::Vector2f(240, 20), font);
+	ip->setLabel("Ip");
+	focusTextInput->setTextInput(ip);
+
+	TextInput* port = new TextInput(sf::Vector2f(260, 100), sf::Vector2f(80, 20), font);
+	port->setLabel("Port");
+	focusTextInput->setTextInput(port);
+
+	TextInput* createServerPort = new TextInput(sf::Vector2f(10, 200), sf::Vector2f(80, 20), font);
+	createServerPort->setLabel("Port");
+	focusTextInput->setTextInput(createServerPort);
+
+	TextLabel* createServerPortBtn = new TextLabel(sf::Vector2f(230, 216), sf::Vector2f(110, 22), font);
+	createServerPortBtn->setText("Start Server");
+	createServerPortBtn->setBackgroundColor(sf::Color::Black);
+	createServerPortBtn->setTextColor(sf::Color::White);
+	focusTextLabel->setTextInput(createServerPortBtn);
+
+	sf::RenderWindow window(sf::VideoMode(370, 600), "Menu - Paint and Send");
+
+	while (window.isOpen()) {
+
+		//Event processing
+		sf::Event event;
+		while (window.pollEvent(event)) {
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::TextEntered) {
+				if (event.text.unicode < 128) {
+					char c = (char)event.text.unicode;
+					switch (c)
+					{
+					case 8: //Backspace
+						if(s.size()>0)
+							s.erase(s.size() - 1);
+						break;
+					case 13: //Enter
+						break;
+					default:
+						s.push_back(c);
+						break;
+					}
+					std::cout << s << std::endl;
+					if (focused != nullptr)
+						focused->setText(s);
+				}
+			}
+
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				if (event.mouseButton.button == sf::Mouse::Left)
+				{
+					//get focused input
+					focused = focusTextInput->checkFocus(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+
+					//reset all inputs border
+					name->setBorderColor(sf::Color::Black);
+					ip->setBorderColor(sf::Color::Black);
+					port->setBorderColor(sf::Color::Black);
+					createServerPort->setBorderColor(sf::Color::Black);
+
+					//set up focused input
+					if (focused != nullptr) {
+						focused->setBorderColor(sf::Color::Green);
+						s.erase();
+					}
+
+					if (focusTextLabel->checkFocus(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y) != nullptr)
+						std::cout << "Clicked button" << std::endl;
+				}
+			}
+		}
+
+		//Render all to screen
+		window.clear(sf::Color::White);
+		window.draw(*name);
+		window.draw(*ip);
+		window.draw(*port);
+		window.draw(*createServerPort);
+		window.draw(*createServerPortBtn);
+		window.display();
+	}
+}
+
 
 void Gui::start() {
+	s.erase();
+
 	connection->setUserName("Franta Lála");
 	actualLine.clear();
 
-	sf::RenderWindow window(sf::VideoMode(1100, 600), "Paint and Send");
-
-	if (!font.loadFromFile("arial.ttf"))
-	{
-		std::cout << "Can't load font";
-		return;
-	}
+	sf::RenderWindow window(sf::VideoMode(1100, 600), "Chat - Paint and Send");
 
 	sf::RectangleShape drawArea(sf::Vector2f(600, 596));
 	drawArea.setFillColor(sf::Color::White);
@@ -112,10 +209,10 @@ void Gui::start() {
 		}
 		
 		//Check for new data
-		std::string message = connection->getMessage();
-		if (message != "") {
+		std::pair<std::string, std::string> message = connection->getMessage();
+		if (message.second != "") {
 			chatString.append("\n");
-			chatString.append(message);
+			chatString.append(message.first + ": " + message.second);
 			chat.setString(chatString);
 		}
 

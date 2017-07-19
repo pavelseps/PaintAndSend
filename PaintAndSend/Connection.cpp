@@ -8,7 +8,7 @@ struct dataToSend {
 	std::string message;
 };
 
-struct dataConst {
+static struct dataConst {
 	sf::Int8 MESSAGE = 1;
 	sf::Int8 LINE = 2;
 	sf::Int8 DELETE_LINE = 3;
@@ -56,7 +56,10 @@ void Connection::listenServer() {
 			packet >> data;
 			if (data.type == dataConst.MESSAGE) {
 				std::cout << "Got message from server: " << data.message << std::endl;
-				messageBufferShow.push_back(data.name + ": " +  data.message);
+				std::pair<std::string, std::string> message;
+				message.first = data.name;
+				message.second = data.message;
+				messageBufferShow.push_back(message);
 			}
 			else if (data.type == dataConst.LINE) {
 				std::cout << "Got line from server..." << std::endl;
@@ -164,8 +167,8 @@ void Connection::sendMessageToServer() {
 }
 
 
-std::string Connection::getMessage() {
-	std::string ret = "";
+std::pair<std::string, std::string> Connection::getMessage() {
+	std::pair<std::string, std::string> ret;
 	if (messageBufferShow.size() > 0) {
 		ret = messageBufferShow.back();
 		messageBufferShow.pop_back();

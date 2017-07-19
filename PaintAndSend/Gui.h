@@ -3,6 +3,9 @@
 #include <vector>
 #include <string>
 #include "Connection.h"
+#include "TextInput.h"
+#include "TextLabel.h"
+#include "FocusCheck.h"
 
 #pragma once
 class Gui
@@ -23,6 +26,7 @@ public:
 	~Gui();
 
 	void start();
+	void menu();
 
 	std::thread startInThread();
 };
