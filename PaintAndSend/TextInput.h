@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 #pragma once
 class TextInput : public sf::Drawable

@@ -202,14 +202,13 @@ void Gui::start() {
 	input.setFillColor(sf::Color::Black);
 	input.setCharacterSize(20);
 	input.setPosition(sf::Vector2f(650, 565));
+
 	sf::RectangleShape textBorder(sf::Vector2f(400, 2));
 	textBorder.setFillColor(sf::Color::Black);
 	textBorder.setPosition(sf::Vector2f(650, 590));
 
-	chat.setFont(font);
-	chat.setFillColor(sf::Color::Black);
-	chat.setCharacterSize(16);
-	chat.setPosition(sf::Vector2f(650, 0));
+
+	Chat* chat = new Chat(sf::Vector2f(650, 550), font);
 
 	while (window.isOpen()) {
 
@@ -224,7 +223,8 @@ void Gui::start() {
 					switch (c)
 					{
 					case 8: //Backspace
-						s.erase(s.size() - 1);
+						if (s.size()>0)
+							s.erase(s.size() - 1);
 						break;
 					case 13: //Enter
 						connection->sendMessage(s);
@@ -269,11 +269,9 @@ void Gui::start() {
 		}
 		
 		//Check for new data
-		std::pair<std::string, std::string> message = connection->getMessage();
-		if (message.second != "") {
-			chatString.append("\n");
-			chatString.append(message.first + ": " + message.second);
-			chat.setString(chatString);
+		GuiMessage* message = connection->getMessage();
+		if (message != nullptr) {
+			chat->addMessage(*message);
 		}
 
 		std::pair<std::string, sf::VertexArray> line = connection->getLine();
@@ -288,7 +286,6 @@ void Gui::start() {
 		//Render all to screen
 		window.clear(sf::Color::White);
 		window.draw(input);
-		window.draw(chat);
 		window.draw(textBorder);
 		window.draw(drawArea);
 		window.draw(actualLine);
@@ -297,6 +294,7 @@ void Gui::start() {
 				window.draw(userLine.second[i]);
 			}
 		}
+		window.draw(*chat);
 		window.display();
 	}
 }

@@ -4,6 +4,7 @@
 #include <string>
 #include "Connection.h"
 #include "Server.h"
+#include "Chat.h"
 #include "TextInput.h"
 #include "TextLabel.h"
 #include "ColorList.h"
@@ -19,8 +20,6 @@ class Gui
 	bool isDrawing = false;
 
 	sf::Text input;
-	sf::Text chat;
-	std::string chatString;
 	sf::Font font;
 	std::string s;
 

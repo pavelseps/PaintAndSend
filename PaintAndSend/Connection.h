@@ -1,8 +1,9 @@
-#include "Client.h"
+#include "Chat.h"
 #include <iostream>
 #include <list>
 #include <string>
 #include <sstream>
+#include <thread>
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 
@@ -18,7 +19,7 @@ class Connection
 	std::vector<std::string> messageBufferSend;
 	std::vector<sf::VertexArray> lineBufferSend;
 
-	std::vector<std::pair<std::string, std::string>> messageBufferShow;
+	std::vector<GuiMessage*> messageBufferShow;
 	std::vector<std::pair<std::string, sf::VertexArray>> lineBufferShow;
 
 	std::vector<std::string> lineBufferToDelete;
@@ -37,7 +38,7 @@ public:
 	void sendMessage(std::string message);
 	void sendLine(sf::VertexArray line);
 
-	std::pair<std::string, std::string> getMessage();
+	GuiMessage* getMessage();
 	std::pair<std::string, sf::VertexArray> getLine();
 
 	void setUserName(std::string n);

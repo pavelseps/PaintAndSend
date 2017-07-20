@@ -59,9 +59,10 @@ void Connection::listenServer() {
 			packet >> data;
 			if (data.type == dataConst.MESSAGE) {
 				std::cout << "Got message from server: " << data.message << std::endl;
-				std::pair<std::string, std::string> message;
-				message.first = data.name;
-				message.second = data.message;
+				GuiMessage* message = new GuiMessage();
+				message->color = sf::Color(data.color);
+				message->name = data.name;
+				message->message = data.message;
 				messageBufferShow.push_back(message);
 			}
 			else if (data.type == dataConst.LINE) {
@@ -172,8 +173,8 @@ void Connection::sendMessageToServer() {
 }
 
 
-std::pair<std::string, std::string> Connection::getMessage() {
-	std::pair<std::string, std::string> ret;
+GuiMessage* Connection::getMessage() {
+	GuiMessage* ret = nullptr;
 	if (messageBufferShow.size() > 0) {
 		ret = messageBufferShow.back();
 		messageBufferShow.pop_back();
