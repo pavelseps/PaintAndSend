@@ -30,10 +30,11 @@ TextInput::~TextInput()
 
 void TextInput::setText(std::string s) {
 	input.setString(s);
+	text = s;
 }
 
 std::string TextInput::getText() {
-	return input.getString();
+	return text;
 }
 
 void TextInput::setBorderColor(sf::Color c) {

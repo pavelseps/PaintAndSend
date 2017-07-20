@@ -11,7 +11,6 @@ class Connection
 {
 
 	sf::TcpSocket socket;
-	sf::TcpListener Listener;
 	sf::SocketSelector selector;
 
 	sf::Color selectedColor;

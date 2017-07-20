@@ -128,24 +128,41 @@ void Gui::menu() {
 						std::string id = clickedBtn->getId();
 
 						if (id == "startServer") {
-							window.close();
 							std::string sPort = createServerPort->getText();
-							server = new Server(sPort);
-							std::thread t1 = server->startLisseningInThread();
-							t1.join();
+
+							if (sPort.size() > 0) {
+								window.close();
+								server = new Server(sPort);
+								std::thread t1 = server->startLisseningInThread();
+								t1.join();
+							}
+							else {
+								createServerPort->setBorderColor(sf::Color::Red);
+							}
 						}
 						else if (id == "startClient") {
-							window.close();
 							std::string userName = name->getText();
-							connection = new Connection(ip->getText(), port->getText());
-							connection->setUserName(userName);
-							connection->setColor(this->focusedColor);
+							std::string sIp = ip->getText();
+							std::string sPort = port->getText();
+							if (userName.size() > 0 && sIp.size() > 0 && sPort.size() > 0) {
+								window.close();
+								connection = new Connection(sIp, sPort);
+								connection->setUserName(userName);
+								connection->setColor(this->focusedColor);
 
-							std::thread t1 = connection->listenServerInThread();
-							std::thread t2 = this->startInThread();
-							t1.join();
-							t2.join();
+								std::thread t1 = connection->listenServerInThread();
+								std::thread t2 = this->startInThread();
+								t1.join();
+								t2.join();
+							}
+							else {
+								name->setBorderColor(sf::Color::Red);
+								ip->setBorderColor(sf::Color::Red);
+								port->setBorderColor(sf::Color::Red);
+							}
 						}
+
+						clickedBtn = nullptr;
 					}
 
 					//Color select
@@ -185,15 +202,14 @@ void Gui::start() {
 	input.setFillColor(sf::Color::Black);
 	input.setCharacterSize(20);
 	input.setPosition(sf::Vector2f(650, 565));
+	sf::RectangleShape textBorder(sf::Vector2f(400, 2));
+	textBorder.setFillColor(sf::Color::Black);
+	textBorder.setPosition(sf::Vector2f(650, 590));
 
 	chat.setFont(font);
 	chat.setFillColor(sf::Color::Black);
 	chat.setCharacterSize(16);
 	chat.setPosition(sf::Vector2f(650, 0));
-
-	sf::RectangleShape textBorder(sf::Vector2f(400, 2));
-	textBorder.setFillColor(sf::Color::Black);
-	textBorder.setPosition(sf::Vector2f(650, 590));
 
 	while (window.isOpen()) {
 

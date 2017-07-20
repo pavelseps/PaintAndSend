@@ -7,6 +7,7 @@ class TextInput : public sf::Drawable
 	sf::Text input;
 	sf::RectangleShape border;
 	int padding = 2;
+	std::string text = "";
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
