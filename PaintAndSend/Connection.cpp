@@ -3,6 +3,7 @@
 
 struct dataToSend {
 	sf::Int8 type;
+	sf::Int32 color;
 	std::string name;
 	std::string localPort;
 	std::string message;
@@ -16,11 +17,11 @@ static struct dataConst {
 
 sf::Packet& operator <<(sf::Packet& packet, const dataToSend& d)
 {
-	return packet << d.type << d.name << d.localPort << d.message;
+	return packet << d.type << d.name << d.localPort << d.message << d.color;
 }
 sf::Packet& operator >>(sf::Packet& packet, dataToSend& d)
 {
-	return packet >> d.type >> d.name >> d.localPort >> d.message;
+	return packet >> d.type >> d.name >> d.localPort >> d.message >> d.color;
 }
 
 
@@ -86,7 +87,7 @@ void Connection::listenServer() {
 						coord.push_back(segment);
 					}
 
-					line.second.append(sf::Vertex(sf::Vector2f(std::stof(coord[0]), std::stof(coord[1])), sf::Color::Black));
+					line.second.append(sf::Vertex(sf::Vector2f(std::stof(coord[0]), std::stof(coord[1])), sf::Color(data.color)));
 					coord.clear();
 				}
 				lineBufferShow.push_back(line);
@@ -121,6 +122,7 @@ void Connection::sendMessageToServer() {
 		data.type = dataConst.MESSAGE;
 		data.message = messageBufferSend.back();
 		data.name = this->userName;
+		data.color = selectedColor.toInteger();
 		messageBufferSend.pop_back();
 		packet << data;
 
@@ -155,6 +157,7 @@ void Connection::sendMessageToServer() {
 		data.message = line;
 		data.localPort = std::to_string(socket.getLocalPort());
 		data.name = this->userName;
+		data.color = selectedColor.toInteger();
 		packet << data;
 
 		if (socket.send(packet) == sf::Socket::Done)
@@ -228,4 +231,8 @@ std::string Connection::renderDeletedLine() {
 		lineBufferToDelete.pop_back();
 	}
 	return ret;
+}
+
+void Connection::setColor(sf::Color c) {
+	this->selectedColor = c;
 }

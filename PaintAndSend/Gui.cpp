@@ -23,12 +23,15 @@ std::thread Gui::startInThread() {
 void Gui::menu() {
 	s.erase();
 
+	//Focused input/button
 	TextInput* focused = nullptr;
 	TextLabel* clickedBtn = nullptr;
 
+	//Focus text
 	FocusCheck<TextInput>* focusTextInput = new FocusCheck<TextInput>();
 	FocusCheck<TextLabel>* focusTextLabel = new FocusCheck<TextLabel>();
 
+	//Text input
 	TextInput* name = new TextInput(sf::Vector2f(10, 10), sf::Vector2f(340, 20), font);
 	name->setLabel("Name");
 	focusTextInput->setTextInput(name);
@@ -45,6 +48,8 @@ void Gui::menu() {
 	createServerPort->setLabel("Port");
 	focusTextInput->setTextInput(createServerPort);
 
+
+	//Buttons
 	TextLabel* createServerBtn = new TextLabel(sf::Vector2f(230, 216), sf::Vector2f(110, 22), font);
 	createServerBtn->setText("Start Server");
 	createServerBtn->setBackgroundColor(sf::Color::Black);
@@ -58,6 +63,15 @@ void Gui::menu() {
 	startClientBtn->setTextColor(sf::Color::White);
 	startClientBtn->setId("startClient");
 	focusTextLabel->setTextInput(startClientBtn);
+
+	//Color list
+	ColorList* colorlist = new ColorList(sf::Vector2f(20, 20), sf::Vector2f(10, 70), 5, 6);
+	colorlist->addColor(sf::Color::Black);
+	colorlist->addColor(sf::Color::Green);
+	colorlist->addColor(sf::Color::Yellow);
+	colorlist->addColor(sf::Color::Magenta);
+	colorlist->addColor(sf::Color::Blue);
+	colorlist->addColor(sf::Color::Cyan);
 
 	sf::RenderWindow window(sf::VideoMode(370, 600), "Menu - Paint and Send");
 
@@ -108,20 +122,24 @@ void Gui::menu() {
 						s.erase();
 					}
 
+					//buttons
 					clickedBtn = focusTextLabel->checkFocus(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 					if (clickedBtn != nullptr) {
 						std::string id = clickedBtn->getId();
 
 						if (id == "startServer") {
+							window.close();
 							std::string sPort = createServerPort->getText();
 							server = new Server(sPort);
 							std::thread t1 = server->startLisseningInThread();
 							t1.join();
 						}
 						else if (id == "startClient") {
+							window.close();
 							std::string userName = name->getText();
 							connection = new Connection(ip->getText(), port->getText());
 							connection->setUserName(userName);
+							connection->setColor(this->focusedColor);
 
 							std::thread t1 = connection->listenServerInThread();
 							std::thread t2 = this->startInThread();
@@ -129,6 +147,10 @@ void Gui::menu() {
 							t2.join();
 						}
 					}
+
+					//Color select
+					if(colorlist->isSelected(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y))
+						focusedColor = colorlist->getSelected();
 				}
 			}
 		}
@@ -141,6 +163,7 @@ void Gui::menu() {
 		window.draw(*startClientBtn);
 		window.draw(*createServerPort);
 		window.draw(*createServerBtn);
+		window.draw(*colorlist);
 		window.display();
 	}
 }
@@ -224,7 +247,7 @@ void Gui::start() {
 				int mouseX = sf::Mouse::getPosition(window).x;
 				int mouseY = sf::Mouse::getPosition(window).y;
 				if (isDrawing && mouseX > drawArea.getPosition().x && mouseY > drawArea.getPosition().y && mouseX < drawArea.getSize().x && mouseY < drawArea.getSize().y) {
-					actualLine.append(sf::Vertex(sf::Vector2f(mouseX, mouseY), sf::Color::Black));
+					actualLine.append(sf::Vertex(sf::Vector2f(mouseX, mouseY), this->focusedColor));
 				}
 			}
 		}

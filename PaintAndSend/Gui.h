@@ -3,10 +3,10 @@
 #include <vector>
 #include <string>
 #include "Connection.h"
-
 #include "Server.h"
 #include "TextInput.h"
 #include "TextLabel.h"
+#include "ColorList.h"
 #include "FocusCheck.h"
 
 #pragma once
@@ -23,6 +23,8 @@ class Gui
 	std::string chatString;
 	sf::Font font;
 	std::string s;
+
+	sf::Color focusedColor = sf::Color::Black;
 
 public:
 	Gui();

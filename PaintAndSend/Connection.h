@@ -14,6 +14,8 @@ class Connection
 	sf::TcpListener Listener;
 	sf::SocketSelector selector;
 
+	sf::Color selectedColor;
+
 	std::vector<std::string> messageBufferSend;
 	std::vector<sf::VertexArray> lineBufferSend;
 
@@ -47,5 +49,7 @@ public:
 
 	void deleteMyLine();
 	std::string renderDeletedLine();
+
+	void setColor(sf::Color c);
 };
 
