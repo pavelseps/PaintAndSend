@@ -3,18 +3,25 @@
 
 
 
-Server::Server() {
-	if (Listener.listen(port) != sf::Socket::Done)
-		return;
-	std::cout << "Server is listening to port " << port << ", waiting for connections... " << std::endl;
+Server::Server(std::string sPort) {
+	this->port = (short)stoi(sPort);
 }
 
-Server::~Server()
-{
+Server::~Server(){
 	
 }
 
+std::thread Server::startLisseningInThread() {
+	return std::thread([this] { this->startLissening(); });
+}
+
 void Server::startLissening() {
+	
+
+	if (Listener.listen(port) != sf::Socket::Done)
+		return;
+	std::cout << "Server is listening to port " << port << ", waiting for connections... " << std::endl;
+
 	std::list<sf::TcpSocket*> clients;
 	sf::SocketSelector selector;
 	selector.add(Listener);

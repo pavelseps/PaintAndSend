@@ -23,12 +23,12 @@ class Connection
 	std::vector<std::string> lineBufferToDelete;
 	std::string userName = "";
 	std::string localPort = "";
-	const unsigned short port = 50001;
+	unsigned short port = 0;
 
 	void sendMessageToServer();
 
 public:
-	Connection();
+	Connection(std::string sIp, std::string sPort);
 	~Connection();
 
 	void listenServer();

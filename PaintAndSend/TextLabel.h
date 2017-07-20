@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 #pragma once
 class TextLabel : public sf::Drawable
@@ -6,6 +7,7 @@ class TextLabel : public sf::Drawable
 	sf::Text input;
 	sf::RectangleShape background;
 	int padding = 3;
+	std::string id = "";
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
@@ -24,5 +26,8 @@ public:
 	void setSize(sf::Vector2f size);
 
 	bool isFocused(int mouseX, int mouseY);
+
+	void setId(std::string s);
+	std::string getId();
 };
 

@@ -1,18 +1,19 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <thread>
 #include <SFML/Network.hpp>
 
 #pragma once
 class Server
 {
 	sf::TcpListener Listener;
-	const unsigned short port = 50001;
+	unsigned short port = 0;
 public:
-	Server();
+	Server(std::string sPort);
 	~Server();
 
 	void startLissening();
+	std::thread startLisseningInThread();
 
 };
-

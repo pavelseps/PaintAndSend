@@ -25,9 +25,11 @@ sf::Packet& operator >>(sf::Packet& packet, dataToSend& d)
 
 
 
-Connection::Connection()
+Connection::Connection(std::string sIp, std::string sPort)
 {
-	sf::Socket::Status status = socket.connect("127.0.0.1", port);
+	this->port = (short)stoi(sPort);
+
+	sf::Socket::Status status = socket.connect(sIp, port);
 	if (status == sf::Socket::Done)
 	{
 		std::cout << "Client: connected to server" << std::endl;

@@ -9,12 +9,6 @@ Gui::Gui()
 		std::cout << "Can't load font";
 		return;
 	}
-	/*
-	std::thread t1 = connection->listenServerInThread();
-	std::thread t2 = this->startInThread();
-
-	t1.join();
-	t2.join();*/
 }
 
 
@@ -30,6 +24,7 @@ void Gui::menu() {
 	s.erase();
 
 	TextInput* focused = nullptr;
+	TextLabel* clickedBtn = nullptr;
 
 	FocusCheck<TextInput>* focusTextInput = new FocusCheck<TextInput>();
 	FocusCheck<TextLabel>* focusTextLabel = new FocusCheck<TextLabel>();
@@ -50,11 +45,19 @@ void Gui::menu() {
 	createServerPort->setLabel("Port");
 	focusTextInput->setTextInput(createServerPort);
 
-	TextLabel* createServerPortBtn = new TextLabel(sf::Vector2f(230, 216), sf::Vector2f(110, 22), font);
-	createServerPortBtn->setText("Start Server");
-	createServerPortBtn->setBackgroundColor(sf::Color::Black);
-	createServerPortBtn->setTextColor(sf::Color::White);
-	focusTextLabel->setTextInput(createServerPortBtn);
+	TextLabel* createServerBtn = new TextLabel(sf::Vector2f(230, 216), sf::Vector2f(110, 22), font);
+	createServerBtn->setText("Start Server");
+	createServerBtn->setBackgroundColor(sf::Color::Black);
+	createServerBtn->setTextColor(sf::Color::White);
+	createServerBtn->setId("startServer");
+	focusTextLabel->setTextInput(createServerBtn);
+
+	TextLabel* startClientBtn = new TextLabel(sf::Vector2f(230, 180), sf::Vector2f(110, 22), font);
+	startClientBtn->setText("Star Client");
+	startClientBtn->setBackgroundColor(sf::Color::Black);
+	startClientBtn->setTextColor(sf::Color::White);
+	startClientBtn->setId("startClient");
+	focusTextLabel->setTextInput(startClientBtn);
 
 	sf::RenderWindow window(sf::VideoMode(370, 600), "Menu - Paint and Send");
 
@@ -105,8 +108,27 @@ void Gui::menu() {
 						s.erase();
 					}
 
-					if (focusTextLabel->checkFocus(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y) != nullptr)
-						std::cout << "Clicked button" << std::endl;
+					clickedBtn = focusTextLabel->checkFocus(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+					if (clickedBtn != nullptr) {
+						std::string id = clickedBtn->getId();
+
+						if (id == "startServer") {
+							std::string sPort = createServerPort->getText();
+							server = new Server(sPort);
+							std::thread t1 = server->startLisseningInThread();
+							t1.join();
+						}
+						else if (id == "startClient") {
+							std::string userName = name->getText();
+							connection = new Connection(ip->getText(), port->getText());
+							connection->setUserName(userName);
+
+							std::thread t1 = connection->listenServerInThread();
+							std::thread t2 = this->startInThread();
+							t1.join();
+							t2.join();
+						}
+					}
 				}
 			}
 		}
@@ -116,8 +138,9 @@ void Gui::menu() {
 		window.draw(*name);
 		window.draw(*ip);
 		window.draw(*port);
+		window.draw(*startClientBtn);
 		window.draw(*createServerPort);
-		window.draw(*createServerPortBtn);
+		window.draw(*createServerBtn);
 		window.display();
 	}
 }
@@ -125,8 +148,6 @@ void Gui::menu() {
 
 void Gui::start() {
 	s.erase();
-
-	connection->setUserName("Franta Lála");
 	actualLine.clear();
 
 	sf::RenderWindow window(sf::VideoMode(1100, 600), "Chat - Paint and Send");

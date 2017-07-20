@@ -54,3 +54,11 @@ void TextLabel::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(background, states);
 	target.draw(input, states);
 }
+
+void TextLabel::setId(std::string s) {
+	this->id = s;
+}
+
+std::string TextLabel::getId() {
+	return this->id;
+}

@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 #include "Connection.h"
+
+#include "Server.h"
 #include "TextInput.h"
 #include "TextLabel.h"
 #include "FocusCheck.h"
@@ -12,7 +14,8 @@ class Gui
 {
 	std::map<std::string, std::vector<sf::VertexArray>> lines;
 	sf::VertexArray actualLine = sf::VertexArray(sf::LineStrip);
-	Connection* connection = new Connection();
+	Connection* connection;
+	Server* server;
 	bool isDrawing = false;
 
 	sf::Text input;
