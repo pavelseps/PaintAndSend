@@ -2,7 +2,7 @@
 #include "Chat.h"
 
 
-Chat::Chat(sf::Vector2f coords, sf::Font &font)
+Chat::Chat(sf::Vector2f &coords, sf::Font &font)
 {
 	this->font = font;
 	this->coords = coords;

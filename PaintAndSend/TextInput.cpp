@@ -2,7 +2,7 @@
 #include "TextInput.h"
 
 
-TextInput::TextInput(sf::Vector2f coords, sf::Vector2f size, sf::Font &font)
+TextInput::TextInput(sf::Vector2f &coords, sf::Vector2f &size, sf::Font &font)
 {
 	label.setFont(font);
 	label.setFillColor(sf::Color::Black);
@@ -45,13 +45,13 @@ void TextInput::setLabel(std::string s) {
 	label.setString(s);
 }
 
-void TextInput::setCoords(sf::Vector2f coords) {
+void TextInput::setCoords(sf::Vector2f &coords) {
 	label.setPosition(coords);
 	input.setPosition(sf::Vector2f(coords.x, coords.y + 15));;
 	border.setPosition(coords.x, coords.y + 15);
 }
 
-void TextInput::setSize(sf::Vector2f size) {
+void TextInput::setSize(sf::Vector2f &size) {
 	input.setCharacterSize(size.y);
 	border.setSize(size);
 }

@@ -11,6 +11,7 @@
 #include "FocusCheck.h"
 
 #pragma once
+/*Giu*/
 class Gui
 {
 	std::map<std::string, std::vector<sf::VertexArray>> lines;
@@ -29,8 +30,12 @@ public:
 	Gui();
 	~Gui();
 
-	void start();
+	/*Start menu*/
 	void menu();
 
+	/*Start client*/
+	void start();
+
+	/*Start client in thread*/
 	std::thread startInThread();
 };

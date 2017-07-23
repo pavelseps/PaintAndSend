@@ -34,19 +34,19 @@ void Gui::menu() {
 	//Text input
 	TextInput* name = new TextInput(sf::Vector2f(10, 10), sf::Vector2f(340, 20), font);
 	name->setLabel("Name");
-	focusTextInput->setTextInput(name);
+	focusTextInput->addElement(name);
 
 	TextInput* ip = new TextInput(sf::Vector2f(10, 100), sf::Vector2f(240, 20), font);
 	ip->setLabel("Ip");
-	focusTextInput->setTextInput(ip);
+	focusTextInput->addElement(ip);
 
 	TextInput* port = new TextInput(sf::Vector2f(260, 100), sf::Vector2f(80, 20), font);
 	port->setLabel("Port");
-	focusTextInput->setTextInput(port);
+	focusTextInput->addElement(port);
 
 	TextInput* createServerPort = new TextInput(sf::Vector2f(10, 200), sf::Vector2f(80, 20), font);
 	createServerPort->setLabel("Port");
-	focusTextInput->setTextInput(createServerPort);
+	focusTextInput->addElement(createServerPort);
 
 
 	//Buttons
@@ -55,14 +55,14 @@ void Gui::menu() {
 	createServerBtn->setBackgroundColor(sf::Color::Black);
 	createServerBtn->setTextColor(sf::Color::White);
 	createServerBtn->setId("startServer");
-	focusTextLabel->setTextInput(createServerBtn);
+	focusTextLabel->addElement(createServerBtn);
 
 	TextLabel* startClientBtn = new TextLabel(sf::Vector2f(230, 180), sf::Vector2f(110, 22), font);
 	startClientBtn->setText("Star Client");
 	startClientBtn->setBackgroundColor(sf::Color::Black);
 	startClientBtn->setTextColor(sf::Color::White);
 	startClientBtn->setId("startClient");
-	focusTextLabel->setTextInput(startClientBtn);
+	focusTextLabel->addElement(startClientBtn);
 
 	//Color list
 	ColorList* colorlist = new ColorList(sf::Vector2f(20, 20), sf::Vector2f(10, 70), 5, 6);
@@ -216,12 +216,14 @@ void Gui::start() {
 
 	sf::RenderWindow window(sf::VideoMode(1100, 600), "Chat - Paint and Send");
 
+	//area for drawing
 	sf::RectangleShape drawArea(sf::Vector2f(600, 550));
 	drawArea.setFillColor(sf::Color::White);
 	drawArea.setOutlineThickness(2);
 	drawArea.setOutlineColor(sf::Color::Black);
 	drawArea.setPosition(sf::Vector2f(2, 2));
 
+	//Status info
 	sf::Text statusLabel("Status:", font, 16);
 	statusLabel.setFillColor(sf::Color::Black);
 	statusLabel.setCharacterSize(20);
@@ -232,7 +234,7 @@ void Gui::start() {
 	status.setCharacterSize(20);
 	status.setPosition(sf::Vector2f(statusLabel.getLocalBounds().left+statusLabel.getLocalBounds().width+10, 565));
 
-
+	//Chat text input
 	sf::Text input("", font, 20);
 	input.setFillColor(sf::Color::Black);
 	input.setPosition(sf::Vector2f(650, 565));

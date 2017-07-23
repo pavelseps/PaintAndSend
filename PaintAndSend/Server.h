@@ -5,6 +5,7 @@
 #include <SFML/Network.hpp>
 
 #pragma once
+/*Server*/
 class Server
 {
 	sf::TcpListener Listener;
@@ -13,7 +14,9 @@ public:
 	Server(std::string sPort);
 	~Server();
 
+	/*Start listening client connections and messages*/
 	void startLissening();
-	std::thread startLisseningInThread();
 
+	/*Start listening client connections and messages in thread*/
+	std::thread startLisseningInThread();
 };

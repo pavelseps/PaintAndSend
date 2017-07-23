@@ -2,7 +2,7 @@
 #include "ColorList.h"
 
 
-ColorList::ColorList(sf::Vector2f s, sf::Vector2f c, int g, int pR)
+ColorList::ColorList(sf::Vector2f &s, sf::Vector2f &c, int g, int pR)
 {
 	this->size = s;
 	this->coords = c;

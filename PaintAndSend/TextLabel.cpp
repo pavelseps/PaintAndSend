@@ -2,7 +2,7 @@
 #include "TextLabel.h"
 
 
-TextLabel::TextLabel(sf::Vector2f coords, sf::Vector2f size, sf::Font &font)
+TextLabel::TextLabel(sf::Vector2f &coords, sf::Vector2f &size, sf::Font &font)
 {
 	input.setFont(font);
 	input.setFillColor(sf::Color::Black);
@@ -36,12 +36,12 @@ void TextLabel::setTextColor(sf::Color c) {
 	input.setFillColor(c);
 }
 
-void TextLabel::setCoords(sf::Vector2f coords) {
+void TextLabel::setCoords(sf::Vector2f &coords) {
 	input.setPosition(sf::Vector2f(coords.x, coords.y + 15));;
 	background.setPosition(coords.x, coords.y + 15);
 }
 
-void TextLabel::setSize(sf::Vector2f size) {
+void TextLabel::setSize(sf::Vector2f &size) {
 	input.setCharacterSize(size.y);
 	background.setSize(size);
 }
