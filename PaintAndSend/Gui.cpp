@@ -89,6 +89,7 @@ void Gui::menu() {
 				delete createServerBtn;
 				delete colorlist;
 				window.close();
+				return;
 			}
 				
 			if (event.type == sf::Event::TextEntered) {
@@ -103,7 +104,8 @@ void Gui::menu() {
 					case 13: //Enter
 						break;
 					default:
-						inputText.push_back(c);
+						if(focused != nullptr && !focused->isTextEscaping())
+							inputText.push_back(c);
 						break;
 					}
 					if (focused != nullptr)
@@ -194,6 +196,7 @@ void Gui::menu() {
 				}
 			}
 		}
+
 
 		//Render all to screen
 		window.clear(sf::Color::White);

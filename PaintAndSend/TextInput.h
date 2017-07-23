@@ -40,4 +40,9 @@ public:
 
 	/*Check if mose is on element and add to selectedColor*/
 	bool isFocused(int mouseX, int mouseY);
+
+	/*Check if is text escaping outside of border*/
+	bool isTextEscaping() {
+		return input.getLocalBounds().width + 20 > border.getSize().x;
+	}
 };
