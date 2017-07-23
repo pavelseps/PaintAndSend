@@ -44,13 +44,13 @@ void Gui::menu() {
 	port->setLabel("Port");
 	focusTextInput->addElement(port);
 
-	TextInput* createServerPort = new TextInput(sf::Vector2f(10, 200), sf::Vector2f(80, 20), font);
+	TextInput* createServerPort = new TextInput(sf::Vector2f(10, 300), sf::Vector2f(80, 20), font);
 	createServerPort->setLabel("Port");
 	focusTextInput->addElement(createServerPort);
 
 
 	//Buttons
-	TextLabel* createServerBtn = new TextLabel(sf::Vector2f(230, 216), sf::Vector2f(110, 22), font);
+	TextLabel* createServerBtn = new TextLabel(sf::Vector2f(230, 316), sf::Vector2f(110, 22), font);
 	createServerBtn->setText("Start Server");
 	createServerBtn->setBackgroundColor(sf::Color::Black);
 	createServerBtn->setTextColor(sf::Color::White);
@@ -65,13 +65,14 @@ void Gui::menu() {
 	focusTextLabel->addElement(startClientBtn);
 
 	//Color list
-	ColorList* colorlist = new ColorList(sf::Vector2f(20, 20), sf::Vector2f(10, 70), 5, 6);
+	ColorList* colorlist = new ColorList(sf::Vector2f(20, 20), sf::Vector2f(10, 70), 5, 8);
 	colorlist->addColor(sf::Color::Black);
 	colorlist->addColor(sf::Color::Green);
 	colorlist->addColor(sf::Color::Yellow);
 	colorlist->addColor(sf::Color::Magenta);
 	colorlist->addColor(sf::Color::Blue);
 	colorlist->addColor(sf::Color::Cyan);
+	colorlist->addColor(sf::Color::Red);
 
 	sf::RenderWindow window(sf::VideoMode(370, 600), "Menu - Paint and Send");
 
