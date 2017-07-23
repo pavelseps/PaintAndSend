@@ -32,7 +32,7 @@ void Chat::addMessage(GuiMessage &message) {
 	for (int i = 0; i < messageSize; i++) {
 		float posY = coords.y - ((messageSize - i) * 25);
 		messages[i]->first.setPosition(sf::Vector2f(coords.x, posY));
-		messages[i]->second.setPosition(sf::Vector2f(coords.x + 50, posY));
+		messages[i]->second.setPosition(sf::Vector2f(coords.x + 65, posY));
 	}
 }
 

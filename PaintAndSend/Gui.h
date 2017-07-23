@@ -17,11 +17,11 @@ class Gui
 	sf::VertexArray actualLine = sf::VertexArray(sf::LineStrip);
 	Connection* connection;
 	Server* server;
-	bool isDrawing = false;
 
-	sf::Text input;
 	sf::Font font;
-	std::string s;
+
+	bool isDrawing = false;
+	std::string inputText;
 
 	sf::Color focusedColor = sf::Color::Black;
 

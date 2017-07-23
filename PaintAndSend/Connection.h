@@ -29,6 +29,8 @@ class Connection
 
 	void sendMessageToServer();
 
+	sf::Socket::Status status;
+
 public:
 	Connection(std::string sIp, std::string sPort);
 	~Connection();
@@ -51,5 +53,7 @@ public:
 	std::string renderDeletedLine();
 
 	void setColor(sf::Color c);
+
+	sf::Socket::Status getStatus();
 };
 

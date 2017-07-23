@@ -6,7 +6,7 @@ Gui::Gui()
 {
 	if (!font.loadFromFile("arial.ttf"))
 	{
-		std::cout << "Can't load font";
+		throw std::runtime_error("Didn't find arial.ttf. Can't load font");
 		return;
 	}
 }
@@ -21,7 +21,7 @@ std::thread Gui::startInThread() {
 }
 
 void Gui::menu() {
-	s.erase();
+	inputText.erase();
 
 	//Focused input/button
 	TextInput* focused = nullptr;
@@ -80,26 +80,34 @@ void Gui::menu() {
 		//Event processing
 		sf::Event event;
 		while (window.pollEvent(event)) {
-			if (event.type == sf::Event::Closed)
+			if (event.type == sf::Event::Closed) {
+				delete name;
+				delete ip;
+				delete port;
+				delete startClientBtn;
+				delete createServerPort;
+				delete createServerBtn;
+				delete colorlist;
 				window.close();
+			}
+				
 			if (event.type == sf::Event::TextEntered) {
 				if (event.text.unicode < 128) {
 					char c = (char)event.text.unicode;
 					switch (c)
 					{
 					case 8: //Backspace
-						if(s.size()>0)
-							s.erase(s.size() - 1);
+						if(inputText.size()>0)
+							inputText.erase(inputText.size() - 1);
 						break;
 					case 13: //Enter
 						break;
 					default:
-						s.push_back(c);
+						inputText.push_back(c);
 						break;
 					}
-					std::cout << s << std::endl;
 					if (focused != nullptr)
-						focused->setText(s);
+						focused->setText(inputText);
 				}
 			}
 
@@ -119,7 +127,7 @@ void Gui::menu() {
 					//set up focused input
 					if (focused != nullptr) {
 						focused->setBorderColor(sf::Color::Green);
-						s.erase();
+						inputText.erase();
 					}
 
 					//buttons
@@ -131,10 +139,17 @@ void Gui::menu() {
 							std::string sPort = createServerPort->getText();
 
 							if (sPort.size() > 0) {
+								delete name;
+								delete ip;
+								delete port;
+								delete startClientBtn;
+								delete createServerPort;
+								delete createServerBtn;
+								delete colorlist;
 								window.close();
+
 								server = new Server(sPort);
-								std::thread t1 = server->startLisseningInThread();
-								t1.join();
+								server->startLissening();
 							}
 							else {
 								createServerPort->setBorderColor(sf::Color::Red);
@@ -145,7 +160,15 @@ void Gui::menu() {
 							std::string sIp = ip->getText();
 							std::string sPort = port->getText();
 							if (userName.size() > 0 && sIp.size() > 0 && sPort.size() > 0) {
+								delete name;
+								delete ip;
+								delete port;
+								delete startClientBtn;
+								delete createServerPort;
+								delete createServerBtn;
+								delete colorlist;
 								window.close();
+
 								connection = new Connection(sIp, sPort);
 								connection->setUserName(userName);
 								connection->setColor(this->focusedColor);
@@ -187,28 +210,36 @@ void Gui::menu() {
 
 
 void Gui::start() {
-	s.erase();
+	inputText.erase();
 	actualLine.clear();
+	Chat* chat = new Chat(sf::Vector2f(650, 550), font);
 
 	sf::RenderWindow window(sf::VideoMode(1100, 600), "Chat - Paint and Send");
 
-	sf::RectangleShape drawArea(sf::Vector2f(600, 596));
+	sf::RectangleShape drawArea(sf::Vector2f(600, 550));
 	drawArea.setFillColor(sf::Color::White);
 	drawArea.setOutlineThickness(2);
 	drawArea.setOutlineColor(sf::Color::Black);
 	drawArea.setPosition(sf::Vector2f(2, 2));
 
-	input.setFont(font);
+	sf::Text statusLabel("Status:", font, 16);
+	statusLabel.setFillColor(sf::Color::Black);
+	statusLabel.setCharacterSize(20);
+	statusLabel.setPosition(sf::Vector2f(2, 565));
+
+	sf::Text status("", font, 16);
+	status.setFillColor(sf::Color::Black);
+	status.setCharacterSize(20);
+	status.setPosition(sf::Vector2f(statusLabel.getLocalBounds().left+statusLabel.getLocalBounds().width+10, 565));
+
+
+	sf::Text input("", font, 20);
 	input.setFillColor(sf::Color::Black);
-	input.setCharacterSize(20);
 	input.setPosition(sf::Vector2f(650, 565));
 
 	sf::RectangleShape textBorder(sf::Vector2f(400, 2));
 	textBorder.setFillColor(sf::Color::Black);
 	textBorder.setPosition(sf::Vector2f(650, 590));
-
-
-	Chat* chat = new Chat(sf::Vector2f(650, 550), font);
 
 	while (window.isOpen()) {
 
@@ -223,19 +254,19 @@ void Gui::start() {
 					switch (c)
 					{
 					case 8: //Backspace
-						if (s.size()>0)
-							s.erase(s.size() - 1);
+						if (inputText.size()>0)
+							inputText.erase(inputText.size() - 1);
 						break;
 					case 13: //Enter
-						connection->sendMessage(s);
-						s.erase();
+						connection->sendMessage(inputText);
+						inputText.erase();
 						break;
 					default:
-						if (s.size() < 25)
-							s.push_back(c);
+						if (inputText.size() < 25)
+							inputText.push_back(c);
 						break;
 					}
-					input.setString(s);
+					input.setString(inputText);
 				}
 			}
 
@@ -283,11 +314,25 @@ void Gui::start() {
 			lines[deleteLine].pop_back();
 
 
+		//Get connection status
+		sf::Socket::Status statusConnection = connection->getStatus();
+		if (statusConnection == sf::Socket::Done) {
+			status.setString("Connected");
+			status.setFillColor(sf::Color::Green);
+		}
+		else {
+			status.setString("Disconected");
+			status.setFillColor(sf::Color::Red);
+		}
+
+
 		//Render all to screen
 		window.clear(sf::Color::White);
 		window.draw(input);
 		window.draw(textBorder);
 		window.draw(drawArea);
+		window.draw(statusLabel);
+		window.draw(status);
 		window.draw(actualLine);
 		for (auto const userLine : lines) {
 			for (std::vector<int>::size_type i = 0; i != userLine.second.size(); i++) {
@@ -297,4 +342,6 @@ void Gui::start() {
 		window.draw(*chat);
 		window.display();
 	}
+
+	delete chat;
 }

@@ -29,15 +29,13 @@ sf::Packet& operator >>(sf::Packet& packet, dataToSend& d)
 Connection::Connection(std::string sIp, std::string sPort)
 {
 	this->port = (short)stoi(sPort);
-
 	sf::Socket::Status status = socket.connect(sIp, port);
-	if (status == sf::Socket::Done)
-	{
-		std::cout << "Client: connected to server" << std::endl;
+	if (status != sf::Socket::Done) {
+		this->status = sf::Socket::Disconnected;
+		return;
 	}
 	else {
-		std::cout << "Client: connection failed" << std::endl;
-		return;
+		this->status = sf::Socket::Done;
 	}
 }
 
@@ -58,7 +56,6 @@ void Connection::listenServer() {
 			
 			packet >> data;
 			if (data.type == dataConst.MESSAGE) {
-				std::cout << "Got message from server: " << data.message << std::endl;
 				GuiMessage* message = new GuiMessage();
 				message->color = sf::Color(data.color);
 				message->name = data.name;
@@ -66,8 +63,6 @@ void Connection::listenServer() {
 				messageBufferShow.push_back(message);
 			}
 			else if (data.type == dataConst.LINE) {
-				std::cout << "Got line from server..." << std::endl;
-
 				std::pair<std::string, sf::VertexArray> line;
 				line.first = data.name + "_" + data.localPort;
 				line.second = sf::VertexArray(sf::LineStrip);
@@ -127,13 +122,8 @@ void Connection::sendMessageToServer() {
 		messageBufferSend.pop_back();
 		packet << data;
 
-		// TCP socket:
-		if (socket.send(packet) == sf::Socket::Done)
-		{
-			std::cout << "Client: message send" << std::endl;
-		}
-		else {
-			std::cout << "Client: message send failed" << std::endl;
+		if (socket.send(packet) != sf::Socket::Done){
+			status = sf::Socket::Disconnected;
 			return;
 		}
 	}
@@ -161,12 +151,9 @@ void Connection::sendMessageToServer() {
 		data.color = selectedColor.toInteger();
 		packet << data;
 
-		if (socket.send(packet) == sf::Socket::Done)
-		{
-			std::cout << "Client: line send" << std::endl;
-		}
-		else {
-			std::cout << "Client: line send failed" << std::endl;
+
+		if (socket.send(packet) != sf::Socket::Done) {
+			status = sf::Socket::Disconnected;
 			return;
 		}
 	}
@@ -215,12 +202,9 @@ void Connection::deleteMyLine() {
 	data.localPort = std::to_string(socket.getLocalPort());
 	packet << data;
 
-	if (socket.send(packet) == sf::Socket::Done)
-	{
-		std::cout << "Client: delete line send" << std::endl;
-	}
-	else {
-		std::cout << "Client: delete line failed" << std::endl;
+
+	if (socket.send(packet) != sf::Socket::Done){
+		status = sf::TcpListener::Disconnected;
 		return;
 	}
 }
@@ -236,4 +220,8 @@ std::string Connection::renderDeletedLine() {
 
 void Connection::setColor(sf::Color c) {
 	this->selectedColor = c;
+}
+
+sf::Socket::Status Connection::getStatus() {
+	return this->status;
 }

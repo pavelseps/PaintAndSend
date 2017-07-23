@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include <iostream>
-#include "Connection.h"
 #include "Gui.h"
 
 
@@ -13,6 +12,5 @@ int main()
 {
 	Gui* g = new Gui();
 	g->menu();
-
     return 0;
 }
