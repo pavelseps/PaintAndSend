@@ -20,7 +20,7 @@ class Connection
 	std::vector<std::string> messageBufferSend;
 	std::vector<sf::VertexArray> lineBufferSend;
 
-	std::vector<GuiMessage*> messageBufferShow;
+	std::vector<GuiMessage> messageBufferShow;
 	std::vector<std::pair<std::string, sf::VertexArray>> lineBufferShow;
 
 	std::vector<std::string> lineBufferToDelete;
@@ -50,7 +50,7 @@ public:
 	void sendLine(sf::VertexArray &line);
 
 	/*Get new message from server*/
-	GuiMessage* getMessage();
+	GuiMessage getMessage();
 
 	/*Get new line from server and id of user which draw line (id pattern is name_port)*/
 	std::pair<std::string, sf::VertexArray> getLine();
@@ -78,5 +78,7 @@ public:
 
 	/*Get connection status*/
 	sf::Socket::Status getStatus();
+
+	bool isNewMessage();
 };
 

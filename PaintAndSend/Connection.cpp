@@ -53,13 +53,15 @@ void Connection::listenServer() {
 		if (socket.receive(packet) == sf::Socket::Done)
 		{
 			dataToSend data = dataToSend();
+			data.message.reserve(31);
+			data.name.reserve(63);
 			packet >> data;
 
 			if (data.type == dataConst.MESSAGE) {	//text
-				GuiMessage* message = new GuiMessage();
-				message->color = sf::Color(data.color);
-				message->name = data.name;
-				message->message = data.message;
+				GuiMessage message = GuiMessage();
+				message.color = sf::Color(data.color);
+				message.name = data.name;
+				message.message = data.message;
 				messageBufferShow.push_back(message);
 			}
 			else if (data.type == dataConst.LINE) {	//line
@@ -158,14 +160,16 @@ void Connection::sendMessageToServer() {
 	}
 }
 
+bool Connection::isNewMessage() {
+	return messageBufferShow.size() > 0;
+}
 
-GuiMessage* Connection::getMessage() {
-	GuiMessage* ret = nullptr;
+GuiMessage Connection::getMessage() {
 	if (messageBufferShow.size() > 0) {
-		ret = messageBufferShow.back();
+		GuiMessage ret = messageBufferShow.back();
 		messageBufferShow.pop_back();
+		return ret;
 	}
-	return ret;
 }
 
 std::pair<std::string, sf::VertexArray> Connection::getLine() {
@@ -198,8 +202,8 @@ void Connection::deleteMyLine() {
 
 	sf::Packet packet;
 	data.type = dataConst.DELETE_LINE;
-	data.name = this->userName;
-	data.localPort = std::to_string(socket.getLocalPort());
+	data.name = (char*)this->userName.c_str();
+	data.localPort = (char*)std::to_string(socket.getLocalPort()).c_str();
 	packet << data;
 
 

@@ -306,9 +306,8 @@ void Gui::start() {
 		}
 		
 		//Check for new data
-		GuiMessage* message = connection->getMessage();
-		if (message != nullptr) {
-			chat->addMessage(*message);
+		if (connection->isNewMessage()) {
+			chat->addMessage(connection->getMessage());
 		}
 
 		std::pair<std::string, sf::VertexArray> line = connection->getLine();
@@ -349,5 +348,5 @@ void Gui::start() {
 		window.display();
 	}
 
-	delete chat;
+	//delete chat;
 }
