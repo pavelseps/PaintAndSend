@@ -44,7 +44,7 @@ void Server::startLissening() {
 					//new client
 					clients.push_back(client);
 					selector.add(*client);
-					std::cout << "New client connected" << std::endl;
+					std::cout << "New client connected: " << client->getRemoteAddress() << ":" << client->getRemotePort() << std::endl;
 				}
 				else
 				{
